@@ -1,0 +1,60 @@
+CREATE TABLE Rum (
+id INTEGER NOT NULL,
+namn VARCHAR(255) NOT NULL,
+antalplatser INTEGER NOT NULL,
+PRIMARY KEY (id));
+
+CREATE TABLE Kurs (
+Kurskod VARCHAR(255) NOT NULL,
+namn VARCHAR(255) NOT NULL,
+längd INTEGER NOT NULL,
+pris INTEGER NOT NULL,
+beskrivning VARCHAR(255) NOT NULL,
+PRIMARY KEY (kurskod));
+
+CREATE TABLE Person (
+personnummer INTEGER NOT NULL,
+namn VARCHAR(255) NOT NULL,
+adress VARCHAR(255) NOT NULL,
+postnr INTEGER NOT NULL,
+ort VARCHAR(255) NOT NULL,
+telefon INTEGER NOT NULL,
+PRIMARY KEY (personnummer));
+
+CREATE TABLE Lärare (
+personnummer INTEGER NOT NULL,
+tjänsterum INTEGER NOT NULL,
+PRIMARY KEY (personnummer),
+FOREIGN KEY (personnummer) REFERENCES Person(personnummer) ON DELETE RESTRICT ON UPDATE CASCADE);
+
+CREATE TABLE Student (
+personnummer INTEGER NOT NULL,
+funktionshindrad BOOLEAN NOT NULL,
+PRIMARY KEY (personnummer),
+FOREIGN KEY(personnummer) REFERENCES Person(personnummer) ON DELETE RESTRICT ON UPDATE CASCADE);
+
+
+CREATE TABLE Kurstillfälle (
+kurs VARCHAR(255) NOT NULL,
+startdatum DATE NOT NULL,
+lärare INTEGER NOT NULL,
+rum INTEGER NOT NULL,
+PRIMARY KEY (kurs, startdatum),
+FOREIGN KEY (kurs) REFERENCES Kurs(kurskod) ON DELETE RESTRICT ON UPDATE CASCADE,
+FOREIGN KEY (lärare) REFERENCES Lärare(personnummer) ON DELETE RESTRICT ON UPDATE CASCADE);
+
+CREATE TABLE Deltagande (
+student INTEGER NOT NULL,
+kurs VARCHAR(255) NOT NULL,
+startdatum DATE NOT NULL,
+PRIMARY KEY (student, kurs, startdatum),
+FOREIGN KEY(student) REFERENCES Student(personnummer) ON DELETE RESTRICT ON UPDATE CASCADE,
+FOREIGN KEY (kurs, startdatum) REFERENCES Kurstillfälle(kurs, startdatum) ON DELETE RESTRICT ON UPDATE CASCADE);
+
+
+ALTER TABLE Kurstillfälle ADD FOREIGN KEY (rum) REFERENCES Rum(id) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+ALTER TABLE Kurstillfälle MODIFY startdatum INTEGER;
+ALTER TABLE Deltagande MODIFY startdatum INTEGER;
+ALTER TABLE Deltagande ADD FOREIGN KEY (startdatum) REFERENCES Kurstillfälle(startdatum) ON DELETE RESTRICT ON UPDATE CASCADE;
+
